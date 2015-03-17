@@ -19,7 +19,7 @@ class PoiSpec extends Specification with ScalaCheck {
     "Poi" should {
       "create workbook" in {
         val wb = Workbook {
-          Set(Sheet("name") {
+          List(Sheet("name") {
             Set(Row(1) {
               Set(NumericCell(1, -13.0/5), FormulaCell(2, "ABS(B2)"))
             },
@@ -46,7 +46,7 @@ class PoiSpec extends Specification with ScalaCheck {
     }
 
       val wb1 = Workbook {
-        Set(Sheet("name") {
+        List(Sheet("name") {
           Set(Row(1) {
             Set(NumericCell(1, -13.0/5), FormulaCell(2, "ABS(B2)"))
           },
@@ -61,7 +61,7 @@ class PoiSpec extends Specification with ScalaCheck {
           })
       }
       val wb2 = Workbook {
-        Set(Sheet("name") {
+        List(Sheet("name") {
           Set(Row(1) {
             Set(NumericCell(1, -13.0/5), FormulaCell(2, "ABS(B2)"))
           },
@@ -76,7 +76,7 @@ class PoiSpec extends Specification with ScalaCheck {
           })
       }
       val wb3 = Workbook {
-        Set(Sheet("name3") {
+        List(Sheet("name3") {
           Set(Row(1) {
             Set(NumericCell(1, -13.0/5), FormulaCell(2, "ABS(B2)"))
           },
@@ -149,10 +149,10 @@ class PoiSpec extends Specification with ScalaCheck {
   } yield Sheet(name)(rows))
 
   implicit def arbWorkbook: Arbitrary[info.folone.scala.poi.Workbook] = Arbitrary(for {
-    sheets ← arbitrary[Set[Sheet]]
+    sheets ← arbitrary[List[Sheet]]
   } yield Workbook(sheets))
 
   trait Workbook extends Scope {
-    val book = Workbook(Set(Sheet("test")(Set(Row(0)(Set(StringCell(0, "theCell")))))))
+    val book = Workbook(List(Sheet("test")(Set(Row(0)(Set(StringCell(0, "theCell")))))))
   }
 }

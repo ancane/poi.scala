@@ -21,7 +21,7 @@ class PoiLoadFileSpec extends Specification { def is=
    "cell have size 12"      ! loadWorkbook().e2 ^
    "and contains [A1...C4]" ! loadWorkbook().e3 ^ endp
 
-  val testBook = Workbook(Set(Sheet("test")(
+  val testBook = Workbook(List(Sheet("test")(
     Set(
       Row(0)(Set(
         StringCell(0, "A1"),
