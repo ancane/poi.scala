@@ -82,12 +82,24 @@ trait Instances {
 
   // Utility functions
   private def mergeSets[A: Semigroup, B](list1: Set[A], list2: Set[A], on: A ⇒ B): Set[A] =
-    combine(list1.groupBy(on(l)).toMap, list2.groupBy(on(l)).toMap)
-      .map { case(_, y) ⇒ y }.toSet
+    combine(
+      list1.groupBy(on(_)).toMap[B, Set[A]].map{ case (k, xs) =>
+        k -> xs.reduceLeft[A]{case (a, b) => Semigroup[A].append(a, b)}
+      },
+      list2.groupBy(on(_)).toMap[B, Set[A]].map{ case (k, xs) =>
+        k -> xs.reduceLeft[A]{case (a, b) => Semigroup[A].append(a, b)}
+      }
+    ).map{ case (_, y) ⇒ y }.toSet
 
-  private def mergeSeqs[A: Semigroup, B](list1: Seq[A], list2: Seq[A], on: A ⇒ B): List[A] =
-    combine(list1.map(l ⇒ (on(l), l)).toMap, list2.map(l ⇒ (on(l), l)).toMap)
-      .map { case(_, y) ⇒ y }.toList
+  private def mergeSeqs[A: Semigroup, B](list1: Seq[A], list2: Seq[A], on: A ⇒ B): Seq[A] =
+    combine(
+      list1.groupBy(on(_)).toMap[B, Seq[A]].map{ case (k, xs) =>
+        k -> xs.reduceLeft[A]{case (a, b) => Semigroup[A].append(a, b)}
+      },
+      list2.groupBy(on(_)).toMap[B, Seq[A]].map{ case (k, xs) =>
+        k -> xs.reduceLeft[A]{case (a, b) => Semigroup[A].append(a, b)}
+      }
+    ).map{ case (_, y) ⇒ y }.toList
 
   private def combine[A, B: Semigroup](m1: Map[A, B], m2: Map[A, B]): Map[A, B] = {
     val k1 = m1.keySet
@@ -98,6 +110,7 @@ trait Instances {
              m2.filterKeys(!intersection.contains(_))
     r2 ++ r1
   }
+
 }
 
 trait Lenses {
