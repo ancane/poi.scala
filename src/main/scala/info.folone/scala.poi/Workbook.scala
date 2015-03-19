@@ -177,7 +177,7 @@ object Workbook {
                   Some(StringCell(index, cell.getStringCellValue))
                 case _                      ⇒ None
               }
-            }.toSet
+            }.toList
           }
         }.toSet
       }
@@ -199,7 +199,7 @@ object Sheet {
   def apply(name: String)(rows: Set[Row]): Sheet = new Sheet(name)(rows)
   def unapply(sheet: Sheet): Option[(String, Set[Row])] = Some((sheet.name, sheet.rows))
 }
-class Row(val index: Int)(val cells: Set[Cell]) {
+class Row(val index: Int)(val cells: Seq[Cell]) {
   def styles(sheet: String): Map[CellStyle, List[CellAddr]] = cells.foldRight(Map[CellStyle, List[CellAddr]]()) {
     case (cell, map) => map |+| cell.styles(sheet, index)
   }
@@ -209,8 +209,8 @@ class Row(val index: Int)(val cells: Set[Cell]) {
   override def hashCode: Int = index.hashCode + cells.hashCode
 }
 object Row {
-  def apply(index: Int)(cells: Set[Cell]): Row = new Row(index)(cells)
-  def unapply(row: Row): Option[(Int, Set[Cell])] = Some((row.index, row.cells))
+  def apply(index: Int)(cells: Seq[Cell]): Row = new Row(index)(cells)
+  def unapply(row: Row): Option[(Int, Seq[Cell])] = Some((row.index, row.cells))
 }
 sealed abstract class Cell(val index: Int, val style: Option[CellStyle]) {
   def styles(sheet: String, row: Int): Map[CellStyle, List[CellAddr]] = style match {

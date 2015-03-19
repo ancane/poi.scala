@@ -50,7 +50,7 @@ trait Instances {
   }
   implicit val rowInstance = new Semigroup[Row] with Equal[Row] with Show[Row] {
     override def append(f1: Row, f2: ⇒ Row): Row =
-      Row(f2.index)(mergeSets(f1.cells, f2.cells, (_: Cell).index))
+      Row(f2.index)(mergeSeqs(f1.cells, f2.cells, (_: Cell).index))
     override def equal(a1: Row, a2: Row): Boolean =
       a1.index == a2.index && a1.cells.toStream.corresponds(a2.cells.toStream)(Equal[Cell].equal)
     override def shows(as: Row): String = "Row (" + as.index + ")(" + as.cells.toIndexedSeq.sortBy(_.index) + ")"
@@ -124,7 +124,7 @@ trait Lenses {
   val stringCellLens: StringCell @> String =
     lensFamily(c ⇒ store(c.data)(changed ⇒ c.copy(data = changed)))
   val rowLens   =
-    setLensFamily[Row, Row, Cell](lens(r ⇒
+    seqLensFamily[Row, Row, Cell](lens(r ⇒
       store(r.cells)(changed ⇒ Row(r.index) (changed))))
   val sheetLens =
     setLensFamily[Sheet, Sheet, Row](lens(s ⇒
