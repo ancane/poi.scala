@@ -52,7 +52,9 @@ trait Instances {
     override def append(f1: Row, f2: ⇒ Row): Row =
       Row(f2.index)(mergeSeqs(f1.cells, f2.cells, (_: Cell).index))
     override def equal(a1: Row, a2: Row): Boolean =
-      a1.index == a2.index && a1.cells.toStream.corresponds(a2.cells.toStream)(Equal[Cell].equal)
+      a1.index == a2.index &&
+    a1.cells.toIndexedSeq.sortBy(_.index).toStream.corresponds(
+      a2.cells.toIndexedSeq.sortBy(_.index).toStream)(Equal[Cell].equal)
     override def shows(as: Row): String = "Row (" + as.index + ")(" + as.cells.toIndexedSeq.sortBy(_.index) + ")"
   }
   implicit val sheetInstance = new Semigroup[Sheet] with Equal[Sheet] with Show[Sheet] {
